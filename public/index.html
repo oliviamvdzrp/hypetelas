@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080b12">
+  <title>TelaFácil — Compartilhe sua tela</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <main id="home" class="page home">
+    <div class="brand">
+      <div class="logo">▣</div>
+      <div>
+        <strong>TelaFácil</strong>
+        <span>compartilhe sua tela sem complicação</span>
+      </div>
+    </div>
+
+    <section class="hero-card">
+      <div class="eyebrow">COMPARTILHAMENTO PELO NAVEGADOR</div>
+      <h1>Compartilhe sua tela.<br><span>É só criar uma sala.</span></h1>
+      <p>Crie uma sala, envie o link para seus amigos e comece a transmitir. Sem instalar programa.</p>
+
+      <div class="join-box">
+        <label for="nameHome">Seu nome</label>
+        <input id="nameHome" maxlength="30" placeholder="Como você quer aparecer?" autocomplete="name">
+        <button id="createBtn" class="primary">Criar uma sala <span>→</span></button>
+      </div>
+
+      <div class="divider"><span>ou</span></div>
+
+      <div class="join-row">
+        <input id="roomInput" maxlength="32" placeholder="Digite o código da sala">
+        <button id="joinBtn" class="secondary">Entrar</button>
+      </div>
+    </section>
+
+    <div class="features">
+      <div><b>🖥️</b><strong>Tela, janela ou aba</strong><span>Escolha exatamente o que compartilhar.</span></div>
+      <div><b>🔊</b><strong>Áudio do sistema</strong><span>Quando o navegador e a fonte permitirem.</span></div>
+      <div><b>🔗</b><strong>Link da sala</strong><span>Convide outras pessoas em segundos.</span></div>
+    </div>
+  </main>
+
+  <main id="room" class="room-page hidden">
+    <header class="topbar">
+      <div class="brand small">
+        <div class="logo">▣</div>
+        <div><strong>TelaFácil</strong><span id="roomStatus">Conectando...</span></div>
+      </div>
+      <div class="room-code">Sala <b id="roomCode"></b></div>
+      <div class="top-actions">
+        <button id="copyBtn" class="icon-btn" title="Copiar convite">🔗</button>
+        <button id="leaveBtn" class="danger">Sair</button>
+      </div>
+    </header>
+
+    <div class="room-layout">
+      <section class="stage">
+        <div id="emptyState" class="empty-state">
+          <div class="big-icon">🖥️</div>
+          <h2>Ninguém está compartilhando</h2>
+          <p>Clique em <b>Compartilhar tela</b> para começar.</p>
+          <button id="shareCenterBtn" class="primary">🖥️ Compartilhar tela</button>
+        </div>
+        <div id="videos" class="videos"></div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="side-head"><h3>Pessoas</h3><span id="count">0</span></div>
+        <div id="participants" class="participants"></div>
+
+        <div class="chat-head">Chat</div>
+        <div id="chatMessages" class="chat-messages"></div>
+        <form id="chatForm" class="chat-form">
+          <input id="chatInput" maxlength="500" placeholder="Digite uma mensagem...">
+          <button>➤</button>
+        </form>
+      </aside>
+    </div>
+
+    <footer class="controls">
+      <button id="shareBtn" class="control primary-control"><span>🖥️</span> Compartilhar tela</button>
+      <button id="micBtn" class="control"><span>🎙️</span> Microfone</button>
+      <button id="stopShareBtn" class="control hidden"><span>⏹️</span> Parar transmissão</button>
+      <button id="inviteBtn" class="control"><span>🔗</span> Copiar convite</button>
+    </footer>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
