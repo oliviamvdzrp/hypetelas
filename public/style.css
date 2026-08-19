@@ -1,13 +1,426 @@
-:root{
-  --bg:#070a10;--panel:#0d121b;--panel2:#111824;--line:#202a39;
-  --text:#f5f7fb;--muted:#8e9bad;--accent:#6d5dfc;--accent2:#8c7cff;
-  --danger:#ff526b;--ok:#43d19b;
-}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 50% -10%,#17172c 0,#070a10 45%);color:var(--text)}
-button,input{font:inherit}button{cursor:pointer;border:0}input{outline:none}
-.hidden{display:none!important}
-.page{min-height:100vh;padding:34px 22px}.home{max-width:1080px;margin:auto}
-.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#4a3be1);font-size:22px;box-shadow:0 10px 30px #5e4eff33}.brand strong{display:block;font-size:20px}.brand span{display:block;color:var(--muted);font-size:12px;margin-top:2px}.hero-card{max-width:650px;margin:85px auto 55px;text-align:center}.eyebrow{font-size:11px;letter-spacing:2px;color:#9d93ff;font-weight:800;margin-bottom:18px}.hero-card h1{font-size:54px;line-height:1.04;margin:0 0 18px;letter-spacing:-2.5px}.hero-card h1 span{color:#9d93ff}.hero-card p{max-width:540px;margin:0 auto 32px;color:var(--muted);font-size:16px;line-height:1.6}.join-box{padding:20px;background:#0e141f;border:1px solid var(--line);border-radius:18px;text-align:left;box-shadow:0 25px 80px #0007}.join-box label{font-size:12px;color:var(--muted);display:block;margin-bottom:8px}.join-box input,.join-row input{width:100%;background:#080c13;border:1px solid #273142;color:white;border-radius:11px;padding:14px 15px}.join-box button{width:100%;margin-top:10px}.primary,.secondary{padding:13px 18px;border-radius:11px;font-weight:800}.primary{background:linear-gradient(135deg,var(--accent),#5545e8);color:#fff;box-shadow:0 10px 30px #6555ff2b}.secondary{background:#151d29;color:#fff;border:1px solid var(--line)}.divider{display:flex;align-items:center;gap:12px;color:#687385;margin:20px 0}.divider:before,.divider:after{content:"";height:1px;background:var(--line);flex:1}.join-row{display:grid;grid-template-columns:1fr auto;gap:10px}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.features>div{padding:20px;border:1px solid var(--line);background:#0b1018aa;border-radius:15px}.features b{display:block;font-size:24px;margin-bottom:12px}.features strong{display:block;font-size:14px}.features span{display:block;color:var(--muted);font-size:12px;margin-top:5px;line-height:1.45}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-.room-page{height:100vh;display:flex;flex-direction:column;background:#070a10}.topbar{height:68px;display:flex;align-items:center;padding:0 18px;border-bottom:1px solid var(--line);background:#0a0e16;gap:20px}.brand.small{min-width:190px}.brand.small .logo{width:34px;height:34px;border-radius:9px;font-size:17px}.brand.small strong{font-size:16px}.room-code{margin:auto;background:#111824;border:1px solid var(--line);padding:8px 13px;border-radius:9px;font-size:12px;color:var(--muted)}.room-code b{color:white;letter-spacing:1px;margin-left:5px}.top-actions{display:flex;gap:8px}.icon-btn,.danger{height:38px;border-radius:9px;padding:0 12px;background:#121a26;color:white;border:1px solid var(--line)}.danger{color:#ff7c8d}.room-layout{min-height:0;flex:1;display:grid;grid-template-columns:1fr 290px}.stage{min-width:0;position:relative;overflow:auto;padding:18px;background:#05070b;display:flex;align-items:center;justify-content:center}.empty-state{text-align:center;color:var(--muted)}.big-icon{width:70px;height:70px;margin:0 auto 15px;display:grid;place-items:center;border-radius:20px;background:#111824;font-size:31px}.empty-state h2{margin:0 0 8px;color:#e8ebf2;font-size:20px}.empty-state p{font-size:13px;margin:0 0 20px}.videos{width:100%;height:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px}.video-card{position:relative;min-height:250px;background:#090d14;border:1px solid var(--line);border-radius:14px;overflow:hidden}.video-card video{width:100%;height:100%;min-height:250px;object-fit:contain;background:#000}.video-name{position:absolute;bottom:10px;left:10px;padding:6px 9px;border-radius:7px;background:#000a;font-size:12px}.sidebar{display:flex;flex-direction:column;min-height:0;border-left:1px solid var(--line);background:#0b1018}.side-head{height:55px;padding:0 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.side-head h3{font-size:14px;margin:0}.side-head span{font-size:11px;background:#171f2d;padding:4px 8px;border-radius:20px;color:var(--muted)}.participants{padding:8px;max-height:240px;overflow:auto}.participant{display:flex;align-items:center;gap:9px;padding:9px;border-radius:9px}.participant:hover{background:#111824}.avatar{width:29px;height:29px;border-radius:9px;background:#242d3d;display:grid;place-items:center;font-size:12px}.pname{font-size:12px;flex:1}.sharing-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px #43d19b}.chat-head{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 15px;font-size:12px;font-weight:800}.chat-messages{flex:1;overflow:auto;padding:12px}.message{margin-bottom:12px}.message .meta{font-size:10px;color:#758195;margin-bottom:3px}.message .text{font-size:12px;color:#dce1ea;line-height:1.4}.chat-form{display:flex;padding:10px;border-top:1px solid var(--line);gap:7px}.chat-form input{min-width:0;flex:1;background:#080c13;color:white;border:1px solid var(--line);border-radius:9px;padding:9px}.chat-form button{width:36px;border-radius:9px;background:var(--accent);color:white}.controls{height:76px;display:flex;justify-content:center;align-items:center;gap:9px;border-top:1px solid var(--line);background:#0a0e16}.control{padding:11px 14px;border-radius:10px;background:#121a26;border:1px solid var(--line);color:#e9edf4;font-size:12px}.primary-control{background:linear-gradient(135deg,var(--accent),#5545e8);border-color:transparent}.toast{position:fixed;z-index:100;top:18px;left:50%;transform:translate(-50%,-120px);opacity:0;background:#151d29;border:1px solid #303b4c;color:white;padding:11px 15px;border-radius:10px;font-size:12px;transition:.25s;box-shadow:0 15px 40px #0008}.toast.show{transform:translate(-50%,0);opacity:1}
-@media(max-width:800px){.hero-card h1{font-size:39px}.features{grid-template-columns:1fr}.room-layout{grid-template-columns:1fr}.sidebar{display:none}.room-code{display:none}.controls{height:auto;padding:10px;flex-wrap:wrap}.topbar{padding:0 10px}.brand.small{min-width:auto}.brand.small span{display:none}.stage{padding:8px}.videos{grid-template-columns:1fr}.video-card,.video-card video{min-height:210px}}
+  <meta name="theme-color" content="#08030f">
+
+  <title>TelaFácil — Compartilhe sua tela</title>
+
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- =========================
+       PÁGINA INICIAL
+  ========================== -->
+
+  <main id="home" class="page home">
+
+    <div class="brand">
+
+      <div class="logo">▣</div>
+
+      <div>
+        <strong>TelaFácil</strong>
+        <span>
+          compartilhe sua tela sem complicação
+        </span>
+      </div>
+
+    </div>
+
+
+    <section class="hero-card">
+
+      <div class="eyebrow">
+        COMPARTILHAMENTO PELO NAVEGADOR
+      </div>
+
+
+      <h1>
+        Compartilhe sua tela.
+        <br>
+        <span>É só criar uma sala.</span>
+      </h1>
+
+
+      <p>
+        Crie uma sala, envie o link para seus amigos
+        e comece a transmitir. Sem instalar programa.
+      </p>
+
+
+      <!-- NOME + SENHA -->
+
+      <div class="join-box">
+
+        <label for="nameHome">
+          Seu nome
+        </label>
+
+        <input
+          id="nameHome"
+          maxlength="30"
+          placeholder="Como você quer aparecer?"
+          autocomplete="name"
+        >
+
+
+        <label
+          for="roomPassword"
+          class="password-label"
+        >
+          🔐 Senha da sala
+          <small>
+            opcional
+          </small>
+        </label>
+
+        <input
+          id="roomPassword"
+          type="password"
+          maxlength="50"
+          placeholder="Deixe vazio para não usar senha"
+          autocomplete="new-password"
+        >
+
+
+        <button
+          id="createBtn"
+          class="primary"
+        >
+          Criar uma sala
+          <span>→</span>
+        </button>
+
+      </div>
+
+
+      <div class="divider">
+        <span>ou</span>
+      </div>
+
+
+      <!-- ENTRAR POR CÓDIGO -->
+
+      <div class="join-row">
+
+        <input
+          id="roomInput"
+          maxlength="32"
+          placeholder="Digite o código da sala"
+        >
+
+        <button
+          id="joinBtn"
+          class="secondary"
+        >
+          Entrar
+        </button>
+
+      </div>
+
+
+      <div
+        id="directRoomLabel"
+        class="direct-room"
+      ></div>
+
+    </section>
+
+
+    <!-- RECURSOS -->
+
+    <div class="features">
+
+      <div>
+
+        <b>🖥️</b>
+
+        <strong>
+          Tela, janela ou aba
+        </strong>
+
+        <span>
+          Escolha exatamente o que compartilhar.
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <b>🔊</b>
+
+        <strong>
+          Áudio do sistema
+        </strong>
+
+        <span>
+          Compartilhe o áudio quando o navegador permitir.
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <b>🔗</b>
+
+        <strong>
+          Link da sala
+        </strong>
+
+        <span>
+          Envie o link e a pessoa entra diretamente.
+        </span>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- =========================
+       SALA
+  ========================== -->
+
+  <main
+    id="room"
+    class="room-page hidden"
+  >
+
+    <!-- TOPO -->
+
+    <header class="topbar">
+
+
+      <div class="brand small">
+
+        <div class="logo">
+          ▣
+        </div>
+
+        <div>
+
+          <strong>
+            TelaFácil
+          </strong>
+
+          <span id="roomStatus">
+            Conectando...
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="room-code">
+
+        Sala
+
+        <b id="roomCode"></b>
+
+      </div>
+
+
+      <div class="top-actions">
+
+        <button
+          id="copyBtn"
+          class="icon-btn"
+          title="Copiar convite"
+        >
+          🔗
+        </button>
+
+
+        <button
+          id="leaveBtn"
+          class="danger"
+        >
+          Sair
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- ÁREA PRINCIPAL -->
+
+    <div class="room-layout">
+
+
+      <!-- TELA -->
+
+      <section class="stage">
+
+
+        <div
+          id="emptyState"
+          class="empty-state"
+        >
+
+          <div class="big-icon">
+            🖥️
+          </div>
+
+          <h2>
+            Ninguém está compartilhando
+          </h2>
+
+          <p>
+            Clique em
+            <b>Compartilhar tela</b>
+            para começar.
+          </p>
+
+          <button
+            id="shareCenterBtn"
+            class="primary"
+          >
+            🖥️ Compartilhar tela
+          </button>
+
+        </div>
+
+
+        <div
+          id="videos"
+          class="videos"
+        ></div>
+
+      </section>
+
+
+      <!-- LATERAL -->
+
+      <aside class="sidebar">
+
+
+        <!-- PESSOAS -->
+
+        <div class="side-head">
+
+          <h3>
+            Pessoas
+          </h3>
+
+          <span id="count">
+            0
+          </span>
+
+        </div>
+
+
+        <div
+          id="participants"
+          class="participants"
+        ></div>
+
+
+        <!-- CHAT -->
+
+        <div class="chat-head">
+          💬 Chat
+        </div>
+
+
+        <div
+          id="chatMessages"
+          class="chat-messages"
+        ></div>
+
+
+        <form
+          id="chatForm"
+          class="chat-form"
+        >
+
+          <input
+            id="chatInput"
+            maxlength="500"
+            placeholder="Digite uma mensagem..."
+          >
+
+          <button
+            type="submit"
+          >
+            ➤
+          </button>
+
+        </form>
+
+      </aside>
+
+    </div>
+
+
+    <!-- CONTROLES -->
+
+    <footer class="controls">
+
+
+      <button
+        id="shareBtn"
+        class="control primary-control"
+      >
+        <span>🖥️</span>
+        Compartilhar tela
+      </button>
+
+
+      <button
+        id="stopShareBtn"
+        class="control hidden"
+      >
+        <span>⏹️</span>
+        Parar transmissão
+      </button>
+
+
+      <button
+        id="micBtn"
+        class="control"
+      >
+        <span>🎙️</span>
+        Microfone
+      </button>
+
+
+      <!-- SOMENTE ADMIN -->
+
+      <button
+        id="muteAllBtn"
+        class="control admin-control hidden"
+      >
+        <span>🔇</span>
+        Mutar todos
+      </button>
+
+
+      <button
+        id="inviteBtn"
+        class="control"
+      >
+        <span>🔗</span>
+        Copiar convite
+      </button>
+
+    </footer>
+
+  </main>
+
+
+  <script src="/app.js"></script>
+
+</body>
+</html>
