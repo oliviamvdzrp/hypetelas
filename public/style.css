@@ -1,426 +1,1860 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg: #050308;
+  --bg-2: #090511;
+
+  --panel: rgba(17, 10, 28, .78);
+  --panel-solid: #110a1c;
+  --panel-light: rgba(31, 18, 48, .78);
+
+  --line: rgba(173, 122, 255, .16);
+  --line-light: rgba(201, 161, 255, .28);
+
+  --text: #ffffff;
+  --muted: #a89db7;
+
+  --purple: #7c3cff;
+  --purple-2: #9d65ff;
+  --lilac: #c7a6ff;
+  --pink: #ed8cff;
+
+  --green: #55e6a5;
+  --red: #ff5577;
+
+  --shadow: 0 25px 80px rgba(0, 0, 0, .55);
+
+  --radius: 22px;
+}
+
+/* =========================
+   RESET
+========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+}
 
-  <meta name="theme-color" content="#08030f">
+body {
+  margin: 0;
+  min-height: 100vh;
 
-  <title>TelaFácil — Compartilhe sua tela</title>
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 
-  <link rel="stylesheet" href="/style.css">
-</head>
+  color: var(--text);
 
-<body>
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(126, 62, 255, .28),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 10% 30%,
+      rgba(180, 83, 255, .08),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 90% 70%,
+      rgba(115, 55, 255, .08),
+      transparent 30%
+    ),
+    #050308;
 
-  <div id="toast" class="toast"></div>
+  overflow-x: hidden;
+}
 
-  <!-- =========================
-       PÁGINA INICIAL
-  ========================== -->
+button,
+input {
+  font-family: inherit;
+}
 
-  <main id="home" class="page home">
+button {
+  border: 0;
+  cursor: pointer;
+}
 
-    <div class="brand">
+input {
+  outline: none;
+}
 
-      <div class="logo">▣</div>
+.hidden {
+  display: none !important;
+}
 
-      <div>
-        <strong>TelaFácil</strong>
-        <span>
-          compartilhe sua tela sem complicação
-        </span>
-      </div>
 
-    </div>
+/* =========================
+   SCROLLBAR
+========================= */
 
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
 
-    <section class="hero-card">
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-      <div class="eyebrow">
-        COMPARTILHAMENTO PELO NAVEGADOR
-      </div>
+::-webkit-scrollbar-thumb {
+  background: rgba(166, 111, 255, .35);
+  border-radius: 999px;
+}
 
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(166, 111, 255, .6);
+}
 
-      <h1>
-        Compartilhe sua tela.
-        <br>
-        <span>É só criar uma sala.</span>
-      </h1>
 
+/* =========================
+   TOAST
+========================= */
 
-      <p>
-        Crie uma sala, envie o link para seus amigos
-        e comece a transmitir. Sem instalar programa.
-      </p>
+.toast {
+  position: fixed;
 
+  z-index: 9999;
 
-      <!-- NOME + SENHA -->
+  top: 22px;
+  left: 50%;
 
-      <div class="join-box">
+  transform:
+    translate(-50%, -130px)
+    scale(.95);
 
-        <label for="nameHome">
-          Seu nome
-        </label>
+  opacity: 0;
 
-        <input
-          id="nameHome"
-          maxlength="30"
-          placeholder="Como você quer aparecer?"
-          autocomplete="name"
-        >
+  padding: 13px 18px;
 
+  max-width: calc(100vw - 30px);
 
-        <label
-          for="roomPassword"
-          class="password-label"
-        >
-          🔐 Senha da sala
-          <small>
-            opcional
-          </small>
-        </label>
+  background:
+    rgba(20, 11, 32, .92);
 
-        <input
-          id="roomPassword"
-          type="password"
-          maxlength="50"
-          placeholder="Deixe vazio para não usar senha"
-          autocomplete="new-password"
-        >
+  border:
+    1px solid var(--line-light);
 
+  border-radius: 16px;
 
-        <button
-          id="createBtn"
-          class="primary"
-        >
-          Criar uma sala
-          <span>→</span>
-        </button>
+  color: #fff;
 
-      </div>
+  font-size: 13px;
+  font-weight: 600;
 
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, .6),
+    0 0 40px rgba(130, 65, 255, .15);
 
-      <div class="divider">
-        <span>ou</span>
-      </div>
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 
+  transition:
+    .3s ease;
+}
 
-      <!-- ENTRAR POR CÓDIGO -->
+.toast.show {
+  transform:
+    translate(-50%, 0)
+    scale(1);
 
-      <div class="join-row">
+  opacity: 1;
+}
 
-        <input
-          id="roomInput"
-          maxlength="32"
-          placeholder="Digite o código da sala"
-        >
 
-        <button
-          id="joinBtn"
-          class="secondary"
-        >
-          Entrar
-        </button>
+/* =========================
+   HOME
+========================= */
 
-      </div>
+.page {
+  min-height: 100vh;
+  padding: 32px 24px 50px;
+}
 
+.home {
+  width: min(1100px, 100%);
+  margin: auto;
+}
 
-      <div
-        id="directRoomLabel"
-        class="direct-room"
-      ></div>
 
-    </section>
+/* =========================
+   BRAND
+========================= */
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
 
-    <!-- RECURSOS -->
+.logo {
+  width: 46px;
+  height: 46px;
 
-    <div class="features">
+  display: grid;
+  place-items: center;
 
-      <div>
+  border-radius: 15px;
 
-        <b>🖥️</b>
+  background:
+    linear-gradient(
+      135deg,
+      var(--purple),
+      var(--pink)
+    );
 
-        <strong>
-          Tela, janela ou aba
-        </strong>
+  color: white;
 
-        <span>
-          Escolha exatamente o que compartilhar.
-        </span>
+  font-size: 21px;
+  font-weight: 800;
 
-      </div>
+  box-shadow:
+    0 12px 35px rgba(124, 60, 255, .35),
+    inset 0 1px 1px rgba(255,255,255,.3);
+}
 
+.brand strong {
+  display: block;
 
-      <div>
+  font-size: 18px;
+  font-weight: 800;
 
-        <b>🔊</b>
+  letter-spacing: -.4px;
+}
 
-        <strong>
-          Áudio do sistema
-        </strong>
+.brand span {
+  display: block;
 
-        <span>
-          Compartilhe o áudio quando o navegador permitir.
-        </span>
+  margin-top: 3px;
 
-      </div>
+  color: var(--muted);
 
+  font-size: 11px;
+}
 
-      <div>
 
-        <b>🔗</b>
+/* =========================
+   HERO
+========================= */
 
-        <strong>
-          Link da sala
-        </strong>
+.hero-card {
+  position: relative;
 
-        <span>
-          Envie o link e a pessoa entra diretamente.
-        </span>
+  width: min(680px, 100%);
 
-      </div>
+  margin:
+    90px auto 65px;
 
-    </div>
+  text-align: center;
+}
 
-  </main>
+.hero-card::before {
+  content: "";
 
+  position: absolute;
 
-  <!-- =========================
-       SALA
-  ========================== -->
+  width: 420px;
+  height: 220px;
 
-  <main
-    id="room"
-    class="room-page hidden"
-  >
+  left: 50%;
+  top: 20%;
 
-    <!-- TOPO -->
+  transform: translate(-50%, -50%);
 
-    <header class="topbar">
+  background:
+    radial-gradient(
+      circle,
+      rgba(140, 73, 255, .22),
+      transparent 70%
+    );
 
+  filter: blur(25px);
 
-      <div class="brand small">
+  z-index: -1;
 
-        <div class="logo">
-          ▣
-        </div>
+  pointer-events: none;
+}
 
-        <div>
+.eyebrow {
+  display: inline-flex;
 
-          <strong>
-            TelaFácil
-          </strong>
+  align-items: center;
+  justify-content: center;
 
-          <span id="roomStatus">
-            Conectando...
-          </span>
+  padding: 7px 13px;
 
-        </div>
+  border-radius: 999px;
 
-      </div>
+  border:
+    1px solid rgba(181, 135, 255, .2);
 
+  background:
+    rgba(137, 74, 255, .08);
 
-      <div class="room-code">
+  color: #c6a5ff;
 
-        Sala
+  font-size: 10px;
+  font-weight: 800;
 
-        <b id="roomCode"></b>
+  letter-spacing: 1.8px;
+}
 
-      </div>
+.hero-card h1 {
+  margin:
+    22px 0 18px;
 
+  font-size:
+    clamp(42px, 6vw, 66px);
 
-      <div class="top-actions">
+  line-height: .99;
 
-        <button
-          id="copyBtn"
-          class="icon-btn"
-          title="Copiar convite"
-        >
-          🔗
-        </button>
+  letter-spacing: -3.5px;
 
+  font-weight: 800;
+}
 
-        <button
-          id="leaveBtn"
-          class="danger"
-        >
-          Sair
-        </button>
+.hero-card h1 span {
+  background:
+    linear-gradient(
+      90deg,
+      #a879ff,
+      #e1c8ff,
+      #b47dff
+    );
 
-      </div>
+  -webkit-background-clip: text;
+  background-clip: text;
 
-    </header>
+  color: transparent;
+}
 
+.hero-card p {
+  width: min(560px, 100%);
 
-    <!-- ÁREA PRINCIPAL -->
+  margin:
+    0 auto 35px;
 
-    <div class="room-layout">
+  color: var(--muted);
 
+  font-size: 15px;
 
-      <!-- TELA -->
+  line-height: 1.7;
+}
 
-      <section class="stage">
 
+/* =========================
+   JOIN BOX
+========================= */
 
-        <div
-          id="emptyState"
-          class="empty-state"
-        >
+.join-box {
+  padding: 23px;
 
-          <div class="big-icon">
-            🖥️
-          </div>
+  text-align: left;
 
-          <h2>
-            Ninguém está compartilhando
-          </h2>
+  background:
+    linear-gradient(
+      145deg,
+      rgba(25, 14, 40, .88),
+      rgba(12, 7, 20, .9)
+    );
 
-          <p>
-            Clique em
-            <b>Compartilhar tela</b>
-            para começar.
-          </p>
+  border:
+    1px solid var(--line);
 
-          <button
-            id="shareCenterBtn"
-            class="primary"
-          >
-            🖥️ Compartilhar tela
-          </button>
+  border-radius: 24px;
 
-        </div>
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(255,255,255,.04);
 
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
 
-        <div
-          id="videos"
-          class="videos"
-        ></div>
+.join-box label {
+  display: block;
 
-      </section>
+  margin:
+    0 0 8px;
 
+  color: #c0b6cc;
 
-      <!-- LATERAL -->
+  font-size: 11px;
+  font-weight: 700;
+}
 
-      <aside class="sidebar">
+.password-label {
+  margin-top: 17px !important;
+}
 
+.password-label small {
+  margin-left: 5px;
 
-        <!-- PESSOAS -->
+  color: #776d84;
 
-        <div class="side-head">
+  font-weight: 500;
+}
 
-          <h3>
-            Pessoas
-          </h3>
+.join-box input,
+.join-row input {
+  width: 100%;
 
-          <span id="count">
-            0
-          </span>
+  height: 50px;
 
-        </div>
+  padding:
+    0 16px;
 
+  color: white;
 
-        <div
-          id="participants"
-          class="participants"
-        ></div>
+  background:
+    rgba(5, 3, 9, .72);
 
+  border:
+    1px solid rgba(183, 135, 255, .13);
 
-        <!-- CHAT -->
+  border-radius: 15px;
 
-        <div class="chat-head">
-          💬 Chat
-        </div>
+  font-size: 13px;
 
+  transition:
+    border .2s,
+    box-shadow .2s,
+    background .2s;
+}
 
-        <div
-          id="chatMessages"
-          class="chat-messages"
-        ></div>
+.join-box input::placeholder,
+.join-row input::placeholder {
+  color: #665d70;
+}
 
+.join-box input:focus,
+.join-row input:focus {
+  border-color:
+    rgba(166, 111, 255, .65);
 
-        <form
-          id="chatForm"
-          class="chat-form"
-        >
+  background:
+    rgba(10, 5, 16, .95);
 
-          <input
-            id="chatInput"
-            maxlength="500"
-            placeholder="Digite uma mensagem..."
-          >
+  box-shadow:
+    0 0 0 4px
+    rgba(130, 66, 255, .1);
+}
 
-          <button
-            type="submit"
-          >
-            ➤
-          </button>
 
-        </form>
+/* =========================
+   BUTTONS
+========================= */
 
-      </aside>
+.primary,
+.secondary {
+  height: 50px;
 
-    </div>
+  border-radius: 15px;
 
+  font-size: 13px;
+  font-weight: 800;
 
-    <!-- CONTROLES -->
+  transition:
+    transform .2s,
+    box-shadow .2s,
+    filter .2s;
+}
 
-    <footer class="controls">
+.primary {
+  background:
+    linear-gradient(
+      135deg,
+      #7435f5,
+      #a45cff
+    );
 
+  color: white;
 
-      <button
-        id="shareBtn"
-        class="control primary-control"
-      >
-        <span>🖥️</span>
-        Compartilhar tela
-      </button>
+  box-shadow:
+    0 12px 30px
+    rgba(124, 60, 255, .3),
+    inset 0 1px 1px
+    rgba(255,255,255,.2);
+}
 
+.primary:hover {
+  transform: translateY(-2px);
 
-      <button
-        id="stopShareBtn"
-        class="control hidden"
-      >
-        <span>⏹️</span>
-        Parar transmissão
-      </button>
+  filter: brightness(1.08);
 
+  box-shadow:
+    0 18px 40px
+    rgba(124, 60, 255, .42);
+}
 
-      <button
-        id="micBtn"
-        class="control"
-      >
-        <span>🎙️</span>
-        Microfone
-      </button>
+.primary:active {
+  transform: translateY(0);
+}
 
+.secondary {
+  padding:
+    0 21px;
 
-      <!-- SOMENTE ADMIN -->
+  color: white;
 
-      <button
-        id="muteAllBtn"
-        class="control admin-control hidden"
-      >
-        <span>🔇</span>
-        Mutar todos
-      </button>
+  background:
+    rgba(255,255,255,.045);
 
+  border:
+    1px solid var(--line);
+}
 
-      <button
-        id="inviteBtn"
-        class="control"
-      >
-        <span>🔗</span>
-        Copiar convite
-      </button>
+.secondary:hover {
+  background:
+    rgba(151, 95, 255, .13);
 
-    </footer>
+  border-color:
+    rgba(176, 125, 255, .35);
+}
 
-  </main>
 
+/* =========================
+   CREATE BUTTON
+========================= */
 
-  <script src="/app.js"></script>
+.join-box button {
+  width: 100%;
 
-</body>
-</html>
+  margin-top: 12px;
+}
+
+.join-box button span {
+  margin-left: 7px;
+
+  font-size: 17px;
+}
+
+
+/* =========================
+   DIVIDER
+========================= */
+
+.divider {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  margin:
+    22px 0;
+
+  color: #665c70;
+
+  font-size: 11px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+
+  height: 1px;
+
+  flex: 1;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--line),
+      transparent
+    );
+}
+
+
+/* =========================
+   JOIN ROW
+========================= */
+
+.join-row {
+  display: grid;
+
+  grid-template-columns: 1fr auto;
+
+  gap: 9px;
+}
+
+.join-row input {
+  height: 50px;
+}
+
+
+/* =========================
+   DIRECT ROOM
+========================= */
+
+.direct-room {
+  min-height: 18px;
+
+  margin-top: 12px;
+
+  color: #9d7ad0;
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   FEATURES
+========================= */
+
+.features {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 15px;
+}
+
+.features > div {
+  position: relative;
+
+  padding: 22px;
+
+  overflow: hidden;
+
+  background:
+    rgba(17, 9, 27, .65);
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 20px;
+
+  transition:
+    transform .25s,
+    border .25s,
+    background .25s;
+}
+
+.features > div::before {
+  content: "";
+
+  position: absolute;
+
+  width: 80px;
+  height: 80px;
+
+  right: -35px;
+  top: -35px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(146, 79, 255, .18),
+      transparent 70%
+    );
+}
+
+.features > div:hover {
+  transform:
+    translateY(-4px);
+
+  border-color:
+    rgba(175, 124, 255, .3);
+
+  background:
+    rgba(25, 13, 39, .8);
+}
+
+.features b {
+  display: block;
+
+  margin-bottom: 14px;
+
+  font-size: 24px;
+}
+
+.features strong {
+  display: block;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.features span {
+  display: block;
+
+  margin-top: 6px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   SALA
+========================================================= */
+
+.room-page {
+  position: relative;
+
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  background:
+    radial-gradient(
+      circle at 50% -20%,
+      rgba(125, 59, 255, .13),
+      transparent 40%
+    ),
+    #040207;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+  position: relative;
+
+  z-index: 20;
+
+  height: 70px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    0 18px;
+
+  gap: 15px;
+
+  background:
+    rgba(10, 5, 16, .78);
+
+  border-bottom:
+    1px solid var(--line);
+
+  backdrop-filter:
+    blur(22px);
+
+  -webkit-backdrop-filter:
+    blur(22px);
+}
+
+.brand.small {
+  min-width: 190px;
+}
+
+.brand.small .logo {
+  width: 37px;
+  height: 37px;
+
+  border-radius: 12px;
+
+  font-size: 17px;
+}
+
+.brand.small strong {
+  font-size: 15px;
+}
+
+.brand.small span {
+  font-size: 9px;
+}
+
+
+/* =========================
+   ROOM CODE
+========================= */
+
+.room-code {
+  position: absolute;
+
+  left: 50%;
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    9px 14px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255,255,255,.035);
+
+  border:
+    1px solid var(--line);
+
+  color: #887e92;
+
+  font-size: 10px;
+
+  backdrop-filter:
+    blur(15px);
+}
+
+.room-code b {
+  margin-left: 5px;
+
+  color: #e4d7f3;
+
+  letter-spacing: 1.5px;
+}
+
+
+/* =========================
+   TOP ACTIONS
+========================= */
+
+.top-actions {
+  display: flex;
+
+  gap: 8px;
+
+  margin-left: auto;
+}
+
+.icon-btn,
+.danger {
+  height: 38px;
+
+  padding:
+    0 13px;
+
+  border-radius: 12px;
+
+  color: white;
+
+  background:
+    rgba(255,255,255,.045);
+
+  border:
+    1px solid var(--line);
+
+  transition:
+    .2s ease;
+}
+
+.icon-btn:hover {
+  background:
+    rgba(143, 82, 255, .15);
+
+  border-color:
+    rgba(172, 120, 255, .35);
+}
+
+.danger {
+  color: #ff8ca5;
+
+  border-color:
+    rgba(255, 85, 119, .18);
+}
+
+.danger:hover {
+  background:
+    rgba(255, 65, 102, .1);
+
+  border-color:
+    rgba(255, 85, 119, .4);
+}
+
+
+/* =========================================================
+   ROOM LAYOUT
+========================================================= */
+
+.room-layout {
+  min-height: 0;
+
+  flex: 1;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr) 315px;
+
+  gap: 0;
+}
+
+
+/* =========================
+   STAGE
+========================= */
+
+.stage {
+  position: relative;
+
+  min-width: 0;
+  min-height: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 22px;
+
+  overflow: auto;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(104, 44, 191, .06),
+      transparent 55%
+    );
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-state {
+  width: min(440px, 90%);
+
+  padding: 42px 25px;
+
+  text-align: center;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 28px;
+
+  background:
+    rgba(15, 8, 24, .62);
+
+  box-shadow:
+    0 30px 90px
+    rgba(0,0,0,.35);
+
+  backdrop-filter:
+    blur(20px);
+}
+
+.big-icon {
+  width: 76px;
+  height: 76px;
+
+  display: grid;
+  place-items: center;
+
+  margin:
+    0 auto 19px;
+
+  border-radius: 23px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(127, 62, 255, .25),
+      rgba(223, 132, 255, .12)
+    );
+
+  border:
+    1px solid
+    rgba(180, 126, 255, .2);
+
+  font-size: 31px;
+
+  box-shadow:
+    0 20px 50px
+    rgba(104, 48, 214, .16);
+}
+
+.empty-state h2 {
+  margin:
+    0 0 9px;
+
+  color: #f7f1ff;
+
+  font-size: 20px;
+
+  letter-spacing: -.4px;
+}
+
+.empty-state p {
+  margin:
+    0 0 22px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   VIDEOS
+========================================================= */
+
+.videos {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(350px, 1fr)
+    );
+
+  gap: 16px;
+}
+
+.video-card {
+  position: relative;
+
+  min-height: 280px;
+
+  overflow: hidden;
+
+  background:
+    #020104;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 23px;
+
+  box-shadow:
+    0 25px 60px
+    rgba(0,0,0,.35);
+}
+
+.video-card video {
+  width: 100%;
+  height: 100%;
+
+  min-height: 280px;
+
+  display: block;
+
+  object-fit: contain;
+
+  background:
+    #000;
+}
+
+.video-name {
+  position: absolute;
+
+  left: 13px;
+  bottom: 13px;
+
+  padding:
+    7px 10px;
+
+  border-radius: 10px;
+
+  background:
+    rgba(5,3,8,.72);
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  color: #f4ecff;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  backdrop-filter:
+    blur(12px);
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+  min-height: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  background:
+    rgba(12, 6, 19, .75);
+
+  border-left:
+    1px solid var(--line);
+
+  backdrop-filter:
+    blur(25px);
+
+  -webkit-backdrop-filter:
+    blur(25px);
+}
+
+
+/* =========================
+   PEOPLE HEADER
+========================= */
+
+.side-head {
+  height: 60px;
+
+  padding:
+    0 17px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom:
+    1px solid var(--line);
+}
+
+.side-head h3 {
+  margin: 0;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.side-head span {
+  min-width: 25px;
+
+  padding:
+    5px 8px;
+
+  text-align: center;
+
+  border-radius: 999px;
+
+  background:
+    rgba(148, 89, 255, .12);
+
+  color:
+    #bfa2e8;
+
+  font-size: 10px;
+}
+
+
+/* =========================
+   PARTICIPANTS
+========================= */
+
+.participants {
+  max-height: 270px;
+
+  padding:
+    9px;
+
+  overflow: auto;
+}
+
+.participant {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  min-height: 48px;
+
+  padding:
+    8px 9px;
+
+  margin-bottom: 3px;
+
+  border-radius: 14px;
+
+  transition:
+    background .2s;
+}
+
+.participant:hover {
+  background:
+    rgba(154, 91, 255, .08);
+}
+
+.avatar {
+  width: 31px;
+  height: 31px;
+
+  flex: 0 0 auto;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #432080,
+      #21102f
+    );
+
+  color: #e6d5ff;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  border:
+    1px solid
+    rgba(190, 133, 255, .16);
+}
+
+.pname {
+  min-width: 0;
+
+  flex: 1;
+
+  color: #ded5e7;
+
+  font-size: 11px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.host-badge {
+  display: inline-block;
+
+  margin-left: 5px;
+
+  padding:
+    3px 5px;
+
+  border-radius: 5px;
+
+  background:
+    rgba(151, 88, 255, .16);
+
+  color:
+    #b994ff;
+
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.sharing-label {
+  display: inline-block;
+
+  margin-left: 5px;
+
+  color:
+    #69eeb0;
+
+  font-size: 8px;
+}
+
+.sharing-dot {
+  width: 7px;
+  height: 7px;
+
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+
+  background:
+    var(--green);
+
+  box-shadow:
+    0 0 13px
+    rgba(85, 230, 165, .8);
+}
+
+.mic-status {
+  font-size: 11px;
+}
+
+.participant-mute {
+  width: 27px;
+  height: 27px;
+
+  border-radius: 9px;
+
+  background:
+    rgba(255,255,255,.05);
+
+  border:
+    1px solid var(--line);
+
+  font-size: 11px;
+
+  transition: .2s;
+}
+
+.participant-mute:hover {
+  background:
+    rgba(255,80,120,.12);
+
+  border-color:
+    rgba(255,80,120,.3);
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+.chat-head {
+  padding:
+    13px 16px;
+
+  border-top:
+    1px solid var(--line);
+
+  border-bottom:
+    1px solid var(--line);
+
+  color: #d8cde2;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.chat-messages {
+  min-height: 0;
+
+  flex: 1;
+
+  padding:
+    14px;
+
+  overflow-y: auto;
+}
+
+.message {
+  margin-bottom: 15px;
+}
+
+.message .meta {
+  margin-bottom: 4px;
+
+  color:
+    #8e819b;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.message .text {
+  width: fit-content;
+  max-width: 90%;
+
+  padding:
+    9px 11px;
+
+  border-radius:
+    5px 13px 13px 13px;
+
+  background:
+    rgba(255,255,255,.045);
+
+  border:
+    1px solid
+    rgba(255,255,255,.04);
+
+  color: #ded6e5;
+
+  font-size: 11px;
+
+  line-height: 1.45;
+}
+
+
+/* =========================
+   CHAT FORM
+========================= */
+
+.chat-form {
+  display: flex;
+
+  gap: 7px;
+
+  padding:
+    11px;
+
+  border-top:
+    1px solid var(--line);
+}
+
+.chat-form input {
+  min-width: 0;
+
+  flex: 1;
+
+  height: 40px;
+
+  padding:
+    0 12px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(0,0,0,.25);
+
+  border:
+    1px solid var(--line);
+
+  color: white;
+
+  font-size: 11px;
+}
+
+.chat-form input:focus {
+  border-color:
+    rgba(159, 100, 255, .45);
+}
+
+.chat-form button {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 12px;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7538f5,
+      #a45cff
+    );
+
+  box-shadow:
+    0 8px 20px
+    rgba(116, 55, 245, .25);
+
+  transition: .2s;
+}
+
+.chat-form button:hover {
+  transform:
+    translateY(-2px);
+}
+
+
+/* =========================================================
+   HUD / CONTROLES
+========================================================= */
+
+.controls {
+  position: absolute;
+
+  z-index: 30;
+
+  left: 50%;
+  bottom: 20px;
+
+  transform:
+    translateX(-50%);
+
+  width: auto;
+
+  min-height: 62px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding:
+    8px;
+
+  border-radius: 20px;
+
+  background:
+    rgba(14, 7, 23, .82);
+
+  border:
+    1px solid
+    rgba(184, 132, 255, .18);
+
+  box-shadow:
+    0 20px 60px
+    rgba(0,0,0,.55),
+    0 0 35px
+    rgba(115, 52, 235, .08);
+
+  backdrop-filter:
+    blur(24px);
+
+  -webkit-backdrop-filter:
+    blur(24px);
+}
+
+
+/* =========================
+   CONTROL BUTTONS
+========================= */
+
+.control {
+  height: 44px;
+
+  padding:
+    0 15px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  border-radius: 13px;
+
+  color: #e9e0f2;
+
+  background:
+    rgba(255,255,255,.045);
+
+  border:
+    1px solid
+    rgba(255,255,255,.06);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  transition:
+    transform .2s,
+    background .2s,
+    border .2s,
+    box-shadow .2s;
+}
+
+.control:hover {
+  transform:
+    translateY(-2px);
+
+  background:
+    rgba(152, 89, 255, .12);
+
+  border-color:
+    rgba(180, 127, 255, .3);
+}
+
+.control span {
+  font-size: 15px;
+}
+
+.primary-control {
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7033ed,
+      #a057ff
+    );
+
+  border-color:
+    transparent;
+
+  box-shadow:
+    0 10px 25px
+    rgba(112, 51, 237, .3);
+}
+
+.primary-control:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #8146ff,
+      #b06aff
+    );
+
+  box-shadow:
+    0 14px 35px
+    rgba(112, 51, 237, .4);
+}
+
+.admin-control {
+  color:
+    #d5bcff;
+
+  background:
+    rgba(132, 72, 255, .1);
+
+  border-color:
+    rgba(162, 106, 255, .2);
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .room-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .room-code {
+    display: none;
+  }
+
+  .stage {
+    padding:
+      12px 12px 95px;
+  }
+
+  .controls {
+    bottom: 12px;
+
+    max-width:
+      calc(100% - 20px);
+
+    overflow-x: auto;
+
+    justify-content: flex-start;
+
+    scrollbar-width: none;
+  }
+
+  .controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .control {
+    flex: 0 0 auto;
+  }
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .page {
+    padding:
+      24px 16px 35px;
+  }
+
+  .hero-card {
+    margin:
+      65px auto 45px;
+  }
+
+  .hero-card h1 {
+    font-size:
+      clamp(39px, 11vw, 54px);
+
+    letter-spacing:
+      -2.5px;
+  }
+
+  .hero-card p {
+    font-size: 13px;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    height: 62px;
+
+    padding:
+      0 10px;
+  }
+
+  .brand.small {
+    min-width: auto;
+  }
+
+  .brand.small span {
+    display: none;
+  }
+
+  .top-actions {
+    gap: 5px;
+  }
+
+  .stage {
+    padding:
+      10px 10px 92px;
+  }
+
+  .videos {
+    grid-template-columns:
+      1fr;
+  }
+
+  .video-card {
+    min-height: 220px;
+
+    border-radius: 18px;
+  }
+
+  .video-card video {
+    min-height: 220px;
+  }
+
+  .empty-state {
+    padding:
+      32px 20px;
+
+    border-radius: 22px;
+  }
+}
+
+
+/* =========================================================
+   CELULAR
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .logo {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 13px;
+  }
+
+  .brand strong {
+    font-size: 16px;
+  }
+
+  .hero-card {
+    margin-top: 55px;
+  }
+
+  .hero-card h1 {
+    font-size: 38px;
+
+    letter-spacing:
+      -2px;
+  }
+
+  .join-box {
+    padding:
+      18px;
+
+    border-radius:
+      20px;
+  }
+
+  .join-row {
+    grid-template-columns:
+      1fr;
+  }
+
+  .join-row button {
+    width: 100%;
+  }
+
+  .features > div {
+    padding:
+      18px;
+  }
+
+  .controls {
+    width:
+      calc(100% - 16px);
+
+    padding:
+      7px;
+
+    border-radius:
+      17px;
+  }
+
+  .control {
+    height: 42px;
+
+    padding:
+      0 12px;
+
+    font-size: 9px;
+  }
+
+  .control span {
+    font-size: 14px;
+  }
+
+  .top-actions .icon-btn {
+    padding:
+      0 10px;
+  }
+
+  .danger {
+    padding:
+      0 10px;
+  }
+}
+
+
+/* =========================================================
+   ANIMAÇÕES
+========================================================= */
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 0
+      rgba(151, 82, 255, 0);
+  }
+
+  50% {
+    box-shadow:
+      0 0 35px
+      rgba(151, 82, 255, .15);
+  }
+}
+
+.primary-control {
+  animation:
+    pulseGlow 4s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   SELEÇÃO
+========================================================= */
+
+::selection {
+  background:
+    rgba(151, 82, 255, .4);
+
+  color: white;
+}
