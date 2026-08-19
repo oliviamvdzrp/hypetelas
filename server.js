@@ -7,8 +7,11 @@ const crypto = require("crypto");
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
-const PORT = process.env.PORT || 10000;
 
+const PORT = process.env.PORT || 10000;
+const MAX_PARTICIPANTS = 12;
+
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/health", (_req, res) => {
@@ -19,11 +22,34 @@ app.get("/health", (_req, res) => {
   });
 });
 
-app.use((_req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
 const rooms = new Map();
+
+function createRoomId() {
+  return crypto.randomBytes(4).toString("hex").toUpperCase();
+}
+
+function createRoom(password = "") {
+  let id = createRoomId();
+
+  while (rooms.has(id)) {
+    id = createRoomId();
+  }
+
+  const room = {
+    id,
+    password: String(password || ""),
+    clients: new Set(),
+    hostId: null,
+    mutedAll: false
+  };
+
+  rooms.set(id, room);
+  return room;
+}
+
+function getRoom(id) {
+  return rooms.get(id);
+}
 
 function send(ws, message) {
   if (ws.readyState === 1) {
@@ -33,44 +59,76 @@ function send(ws, message) {
 
 function broadcast(room, message, except = null) {
   for (const client of room.clients) {
-    if (client !== except) {
+    if (client.ws !== except) {
       send(client.ws, message);
     }
   }
 }
 
-function getRoom(id) {
-  let room = rooms.get(id);
-
-  if (!room) {
-    room = {
-      clients: new Set()
-    };
-
-    rooms.set(id, room);
-  }
-
-  return room;
+function participantInfo(client) {
+  return {
+    peerId: client.peerId,
+    name: client.name,
+    sharing: client.sharing,
+    micOn: client.micOn,
+    host: client.peerId === client.room.hostId
+  };
 }
 
-function cleanRoom(room) {
-  if (room.clients.size === 0) {
-    for (const [id, r] of rooms) {
-      if (r === room) {
-        rooms.delete(id);
-      }
+function broadcastParticipants(room) {
+  broadcast(room, {
+    type: "participants",
+    participants: [...room.clients].map(participantInfo),
+    mutedAll: room.mutedAll
+  });
+}
+
+function removeClient(ws) {
+  const room = ws.room;
+
+  if (!room) return;
+
+  const client = [...room.clients].find(
+    item => item.ws === ws
+  );
+
+  if (!client) return;
+
+  room.clients.delete(client);
+
+  broadcast(room, {
+    type: "participant-left",
+    peerId: client.peerId
+  });
+
+  if (room.hostId === client.peerId) {
+    const next = room.clients.values().next().value;
+
+    room.hostId = next ? next.peerId : null;
+
+    if (next) {
+      send(next.ws, {
+        type: "host-changed",
+        host: true
+      });
     }
   }
+
+  broadcastParticipants(room);
+
+  if (room.clients.size === 0) {
+    rooms.delete(room.id);
+  }
 }
 
-wss.on("connection", (ws) => {
+wss.on("connection", ws => {
   ws.isAlive = true;
 
   ws.on("pong", () => {
     ws.isAlive = true;
   });
 
-  ws.on("message", (raw) => {
+  ws.on("message", raw => {
     let msg;
 
     try {
@@ -79,8 +137,25 @@ wss.on("connection", (ws) => {
       return;
     }
 
+    /*
+     * CRIAR SALA
+     */
+    if (msg.type === "create-room") {
+      const room = createRoom(msg.password);
+
+      send(ws, {
+        type: "room-created",
+        room: room.id
+      });
+
+      return;
+    }
+
+    /*
+     * ENTRAR NA SALA
+     */
     if (msg.type === "join") {
-      const id = String(msg.room || "")
+      const roomId = String(msg.room || "")
         .replace(/[^a-zA-Z0-9_-]/g, "")
         .slice(0, 32);
 
@@ -89,83 +164,109 @@ wss.on("connection", (ws) => {
           .trim()
           .slice(0, 30) || "Convidado";
 
-      if (!id) {
-        return send(ws, {
+      const password = String(msg.password || "");
+
+      if (!roomId) {
+        send(ws, {
           type: "error",
           message: "Sala inválida."
         });
+
+        return;
       }
 
-      const room = getRoom(id);
+      const room = getRoom(roomId);
 
-      if (room.clients.size >= 12) {
-        return send(ws, {
+      if (!room) {
+        send(ws, {
           type: "error",
-          message: "Esta sala atingiu o limite de 12 participantes."
+          message: "Essa sala não existe ou já foi encerrada."
         });
+
+        return;
+      }
+
+      if (room.password && room.password !== password) {
+        send(ws, {
+          type: "password-required",
+          message: "Senha da sala incorreta."
+        });
+
+        return;
+      }
+
+      if (room.clients.size >= MAX_PARTICIPANTS) {
+        send(ws, {
+          type: "error",
+          message: `A sala atingiu o limite de ${MAX_PARTICIPANTS} participantes.`
+        });
+
+        return;
       }
 
       const peerId = crypto.randomUUID();
 
-      ws.roomId = id;
-      ws.peerId = peerId;
-      ws.name = name;
-
-      const participant = {
+      const client = {
         ws,
         peerId,
         name,
-        sharing: false
+        room,
+        sharing: false,
+        micOn: false
       };
 
-      room.clients.add(participant);
+      ws.room = room;
+      ws.peerId = peerId;
+
+      room.clients.add(client);
+
+      if (!room.hostId) {
+        room.hostId = peerId;
+      }
 
       send(ws, {
         type: "joined",
         peerId,
-        room: id,
-        participants: [...room.clients].map((p) => ({
-          peerId: p.peerId,
-          name: p.name,
-          sharing: p.sharing
-        }))
+        room: room.id,
+        host: room.hostId === peerId,
+        mutedAll: room.mutedAll,
+        participants: [...room.clients].map(participantInfo)
       });
 
       broadcast(
         room,
         {
           type: "participant-joined",
-          participant: {
-            peerId,
-            name,
-            sharing: false
-          }
+          participant: participantInfo(client)
         },
-        participant
+        ws
       );
+
+      broadcastParticipants(room);
 
       return;
     }
 
-    const room = ws.roomId
-      ? rooms.get(ws.roomId)
-      : null;
+    const room = ws.room;
 
     if (!room) {
       return;
     }
 
     const me = [...room.clients].find(
-      (p) => p.ws === ws
+      client => client.ws === ws
     );
 
     if (!me) {
       return;
     }
 
+    /*
+     * SINALIZAÇÃO WEBRTC
+     */
     if (msg.type === "signal") {
       const target = [...room.clients].find(
-        (p) => p.peerId === msg.to
+        client => client.peerId === msg.to
       );
 
       if (target) {
@@ -176,29 +277,66 @@ wss.on("connection", (ws) => {
           signal: msg.signal
         });
       }
+
+      return;
     }
 
+    /*
+     * COMPARTILHAMENTO DE TELA
+     */
     if (msg.type === "sharing") {
       me.sharing = !!msg.value;
 
-      broadcast(room, {
-        type: "participant-updated",
-        participant: {
-          peerId: me.peerId,
-          name: me.name,
-          sharing: me.sharing
-        }
-      });
+      broadcastParticipants(room);
+
+      return;
     }
 
+    /*
+     * MICROFONE
+     */
+    if (msg.type === "mic") {
+      me.micOn = !!msg.value;
+
+      broadcastParticipants(room);
+
+      return;
+    }
+
+    /*
+     * MUTAR TODOS
+     */
+    if (msg.type === "mute-all") {
+      if (me.peerId !== room.hostId) {
+        send(ws, {
+          type: "error",
+          message: "Somente o criador da sala pode mutar todos."
+        });
+
+        return;
+      }
+
+      room.mutedAll = !!msg.value;
+
+      broadcast(room, {
+        type: "mute-all",
+        value: room.mutedAll
+      });
+
+      broadcastParticipants(room);
+
+      return;
+    }
+
+    /*
+     * CHAT
+     */
     if (msg.type === "chat") {
       const text = String(msg.text || "")
         .trim()
         .slice(0, 500);
 
-      if (!text) {
-        return;
-      }
+      if (!text) return;
 
       broadcast(room, {
         type: "chat",
@@ -207,35 +345,23 @@ wss.on("connection", (ws) => {
         text,
         at: Date.now()
       });
+
+      return;
     }
   });
 
   ws.on("close", () => {
-    const room = ws.roomId
-      ? rooms.get(ws.roomId)
-      : null;
+    removeClient(ws);
+  });
 
-    if (!room) {
-      return;
-    }
-
-    const me = [...room.clients].find(
-      (p) => p.ws === ws
-    );
-
-    if (me) {
-      room.clients.delete(me);
-
-      broadcast(room, {
-        type: "participant-left",
-        peerId: me.peerId
-      });
-    }
-
-    cleanRoom(room);
+  ws.on("error", () => {
+    removeClient(ws);
   });
 });
 
+/*
+ * Mantém WebSocket ativo
+ */
 setInterval(() => {
   for (const ws of wss.clients) {
     if (!ws.isAlive) {
@@ -250,6 +376,16 @@ setInterval(() => {
     ws.ping();
   }
 }, 30000);
+
+/*
+ * Fallback do frontend.
+ * Compatível com Express 5.
+ */
+app.use((_req, res) => {
+  res.sendFile(
+    path.join(__dirname, "public", "index.html")
+  );
+});
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(
